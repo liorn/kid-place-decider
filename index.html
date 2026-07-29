@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מי ישן איפה?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night-1:#0a1026;
+  --night-2:#141c3d;
+  --night-3:#1d2650;
+  --ink:#f3ead9;
+  --ink-dim:#a9b0cd;
+  --gold:#f2c14e;
+  --gold-soft:#f7dfa5;
+  --rose:#e08a6d;
+  --line:rgba(242,193,78,.22);
+  --card:rgba(255,255,255,.045);
+  --radius:18px;
+  --shadow:0 18px 50px -22px rgba(0,0,0,.85);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Assistant','Arial Hebrew',system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 700px at 85% -10%, rgba(242,193,78,.13), transparent 60%),
+    radial-gradient(900px 600px at 5% 110%, rgba(224,138,109,.12), transparent 60%),
+    linear-gradient(170deg, var(--night-1) 0%, var(--night-2) 45%, var(--night-3) 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  padding:0 0 90px;
+}
+/* star field */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.75;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 18%, #fff6e0 40%, transparent 41%),
+    radial-gradient(1.2px 1.2px at 27% 62%, #fff 40%, transparent 41%),
+    radial-gradient(1.8px 1.8px at 41% 9%, #ffe9bd 40%, transparent 41%),
+    radial-gradient(1.1px 1.1px at 58% 33%, #fff 40%, transparent 41%),
+    radial-gradient(1.5px 1.5px at 73% 74%, #fff3d6 40%, transparent 41%),
+    radial-gradient(1.2px 1.2px at 88% 22%, #fff 40%, transparent 41%),
+    radial-gradient(1.4px 1.4px at 92% 58%, #ffe9bd 40%, transparent 41%),
+    radial-gradient(1.1px 1.1px at 6% 82%, #fff 40%, transparent 41%),
+    radial-gradient(1.3px 1.3px at 47% 88%, #fff3d6 40%, transparent 41%),
+    radial-gradient(1px 1px at 65% 52%, #fff 40%, transparent 41%);
+  animation:twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.35}to{opacity:.85}}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 18px}
+
+/* ---------- header ---------- */
+header{padding:54px 0 26px;text-align:center;position:relative}
+.moon{
+  width:64px;height:64px;border-radius:50%;margin:0 auto 18px;
+  background:radial-gradient(circle at 34% 30%, #fff8e6, #f2c14e 62%, #c99327);
+  box-shadow:0 0 0 10px rgba(242,193,78,.07), 0 0 44px 8px rgba(242,193,78,.28);
+  animation:float 6s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+h1{
+  font-family:'Frank Ruhl Libre','Arial Hebrew',serif;font-weight:900;
+  font-size:clamp(2.3rem,8vw,3.4rem);margin:0;line-height:1.05;letter-spacing:-.5px;
+}
+h1 em{font-style:normal;color:var(--gold);}
+.sub{color:var(--ink-dim);margin:12px 0 0;font-size:1.02rem;font-weight:300}
+
+/* ---------- cards ---------- */
+section{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius);
+  padding:22px 20px 24px;
+  margin:18px 0;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  animation:rise .6s cubic-bezier(.2,.7,.3,1) backwards;
+}
+section:nth-of-type(1){animation-delay:.05s}
+section:nth-of-type(2){animation-delay:.12s}
+section:nth-of-type(3){animation-delay:.19s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.head{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.num{
+  flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;font-weight:700;font-size:.95rem;
+  color:#20180a;background:linear-gradient(160deg,var(--gold-soft),var(--gold));
+  box-shadow:0 0 18px rgba(242,193,78,.3);
+}
+h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:1.32rem;margin:0;flex:1}
+.count{font-size:.85rem;color:var(--ink-dim);font-weight:400}
+
+/* ---------- inputs ---------- */
+input[type=text],select{
+  font-family:inherit;font-size:1rem;color:var(--ink);
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:11px;padding:11px 13px;outline:none;
+  transition:border-color .18s, box-shadow .18s, background .18s;
+  min-width:0;
+}
+input::placeholder{color:#7c85a8}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,193,78,.15);background-color:rgba(0,0,0,.42)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:left 14px top 50%, left 9px top 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-left:30px;cursor:pointer}
+select option{background:#141c3d;color:var(--ink)}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row input{flex:1 1 140px}
+button{font-family:inherit;cursor:pointer;border:none;transition:transform .12s, filter .18s, background .18s}
+button:active{transform:scale(.96)}
+.add{
+  background:rgba(242,193,78,.14);color:var(--gold-soft);
+  border:1px solid var(--line);border-radius:11px;
+  padding:11px 20px;font-size:1rem;font-weight:600;white-space:nowrap;
+}
+.add:hover{background:rgba(242,193,78,.24)}
+
+/* ---------- chips / lists ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);
+  border-radius:999px;padding:7px 8px 7px 14px;font-size:1rem;font-weight:600;
+  animation:pop .28s cubic-bezier(.2,1.5,.4,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.chip .x{
+  background:none;color:var(--ink-dim);font-size:1.1rem;line-height:1;
+  padding:0 2px;border-radius:50%;
+}
+.chip .x:hover{color:var(--rose)}
+.zonegroup{margin-bottom:12px}
+.zonelabel{
+  font-family:'Frank Ruhl Libre',serif;font-size:.95rem;color:var(--gold);
+  letter-spacing:.4px;margin-bottom:7px;display:flex;align-items:center;gap:8px;
+}
+.zonelabel::after{content:"";flex:1;height:1px;background:var(--line)}
+.clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.clist li{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:10px 13px;font-size:.98rem;
+  animation:pop .28s cubic-bezier(.2,1.5,.4,1);
+}
+.clist li span{flex:1}
+.clist li .x{background:none;color:var(--ink-dim);font-size:1.2rem;line-height:1;padding:0 4px}
+.clist li .x:hover{color:var(--rose)}
+.empty{color:#79809f;font-size:.93rem;font-style:italic;margin:2px 0 14px}
+
+/* ---------- constraint builder ---------- */
+.cform{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.cform select{flex:1 1 130px}
+.cform .add{flex:0 0 auto}
+.hint{font-size:.86rem;color:#79809f;margin:11px 0 0;line-height:1.5}
+
+/* ---------- go ---------- */
+.go{
+  display:block;width:100%;margin:26px 0 0;
+  font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:1.5rem;
+  color:#20180a;padding:19px;border-radius:16px;
+  background:linear-gradient(135deg,#ffe9b0,var(--gold) 55%,#e0a52c);
+  box-shadow:0 12px 34px -10px rgba(242,193,78,.55), inset 0 1px 0 rgba(255,255,255,.5);
+  letter-spacing:.5px;
+}
+.go:hover{filter:brightness(1.07)}
+.go:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.5)}
+
+/* ---------- result ---------- */
+#result{margin-top:24px}
+.beds{display:flex;flex-direction:column;gap:14px}
+.bed{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(160deg,rgba(242,193,78,.09),rgba(255,255,255,.02));
+  padding:15px 16px 17px;
+}
+.bedname{font-family:'Frank Ruhl Libre',serif;font-size:1.05rem;color:var(--gold);margin-bottom:11px}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+.slot{
+  background:rgba(10,16,38,.6);border:1px solid rgba(255,255,255,.09);
+  border-radius:13px;padding:13px 12px;text-align:center;
+  animation:flip .5s cubic-bezier(.2,.8,.3,1) backwards;
+}
+@keyframes flip{from{opacity:0;transform:translateY(10px) rotateX(-35deg)}to{opacity:1;transform:none}}
+.slot .place{font-size:.8rem;color:var(--ink-dim);margin-bottom:5px;letter-spacing:.3px}
+.slot .who{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:1.35rem}
+.slot.free .who{color:#5f678a;font-weight:500;font-size:1.1rem;font-style:italic}
+.slot.rolling .who{color:var(--gold-soft);opacity:.65}
+.banner{
+  border-radius:13px;padding:13px 15px;font-size:.97rem;line-height:1.5;margin-bottom:14px;
+}
+.banner.err{background:rgba(224,138,109,.14);border:1px solid rgba(224,138,109,.4);color:#f6c3ae}
+.banner.ok{background:rgba(242,193,78,.1);border:1px solid var(--line);color:var(--gold-soft)}
+footer{text-align:center;margin-top:34px;padding-bottom:10px;display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap}
+.reset{background:none;color:#5f678a;font-size:.88rem;text-decoration:underline;text-underline-offset:3px;padding:8px}
+.reset:hover{color:var(--rose)}
+.sound{background:none;color:#5f678a;font-size:1.15rem;padding:6px 10px;border-radius:10px}
+.sound:hover{color:var(--gold)}
+
+/* ================= THE SHOW ================= */
+#show{position:fixed;inset:0;z-index:100;display:grid;place-items:center;overflow:hidden;
+  background:#120a2a;animation:showIn .35s ease}
+#show[hidden]{display:none}
+#show.out{animation:showOut .5s ease forwards}
+@keyframes showIn{from{opacity:0}to{opacity:1}}
+@keyframes showOut{to{opacity:0;visibility:hidden}}
+#show .party{
+  position:absolute;inset:-30%;
+  background:
+    radial-gradient(closest-side at 20% 25%, #ff5f9e, transparent 70%),
+    radial-gradient(closest-side at 78% 22%, #ffd23f, transparent 70%),
+    radial-gradient(closest-side at 25% 78%, #22d3ee, transparent 70%),
+    radial-gradient(closest-side at 80% 80%, #a855f7, transparent 70%),
+    radial-gradient(closest-side at 50% 50%, #34d399, transparent 70%);
+  filter:blur(38px);opacity:.55;animation:swirl 9s linear infinite;
+}
+@keyframes swirl{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+#show .rays{position:absolute;inset:-50%;opacity:.16;
+  background:repeating-conic-gradient(from 0deg,#fff 0deg 7deg,transparent 7deg 14deg);
+  animation:spinrays 24s linear infinite}
+@keyframes spinrays{to{transform:rotate(360deg)}}
+#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.showinner{position:relative;z-index:2;text-align:center;padding:24px;width:100%;max-width:1180px}
+#showText{
+  font-family:'Frank Ruhl Libre',serif;font-weight:900;line-height:1;
+  text-shadow:0 8px 30px rgba(0,0,0,.5);
+}
+#showText .big{
+  display:block;font-size:clamp(6rem,34vw,15rem);
+  background:linear-gradient(180deg,#fff,#ffd23f 55%,#ff8a3d);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:boom .85s cubic-bezier(.15,1.4,.4,1);
+}
+@keyframes boom{0%{transform:scale(.2) rotate(-14deg);opacity:0}
+  55%{transform:scale(1.18) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+#showText .word{
+  display:block;font-size:clamp(2.4rem,11vw,5rem);color:#fff;
+  animation:wiggle .5s cubic-bezier(.2,1.5,.4,1);
+}
+#showText .word.rainbow{
+  background:linear-gradient(92deg,#ff5f9e,#ffd23f,#34d399,#22d3ee,#a855f7,#ff5f9e);
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:wiggle .5s cubic-bezier(.2,1.5,.4,1), slide 2.2s linear infinite;
+}
+@keyframes slide{to{background-position:300% 0}}
+@keyframes wiggle{0%{transform:scale(.5) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.showcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:34px;perspective:1100px}
+.scard{
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.28);
+  border-radius:22px;padding:22px 14px 24px;backdrop-filter:blur(6px);
+  box-shadow:0 14px 38px -14px rgba(0,0,0,.75);
+  animation:deal .45s cubic-bezier(.2,1.5,.35,1) var(--d,0s) backwards;
+}
+@keyframes deal{from{opacity:0;transform:translateY(22px) scale(.85)}to{opacity:1;transform:none}}
+.scard .p{font-size:clamp(.88rem,1.8vw,1.08rem);color:rgba(255,255,255,.8);margin-bottom:9px;letter-spacing:.2px}
+.scard .n{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:clamp(1.7rem,5vw,2.6rem);color:#fff;min-height:1.2em;line-height:1.15}
+.scard.spin .n{opacity:.8;filter:blur(.4px)}
+.scard.done{
+  background:linear-gradient(160deg,rgba(255,255,255,.32),rgba(255,255,255,.12));
+  border-color:#ffd23f;box-shadow:0 0 0 4px rgba(255,210,63,.25),0 14px 34px -12px #000;
+  animation:land .6s cubic-bezier(.2,1.6,.35,1) 0s both;
+}
+@keyframes land{0%{transform:scale(.7) rotateY(90deg)}60%{transform:scale(1.12) rotateY(0)}100%{transform:scale(1)}}
+.scard.empty{opacity:.4}
+#skip{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);
+  border-radius:999px;padding:9px 22px;font-size:.92rem;font-weight:600;backdrop-filter:blur(4px)}
+#skip:hover{background:rgba(255,255,255,.26)}
+#skip.final{
+  font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:1.1rem;padding:13px 34px;
+  color:#20180a;border-color:transparent;
+  background:linear-gradient(135deg,#ffe9b0,#f2c14e 55%,#e0a52c);
+  box-shadow:0 12px 30px -10px rgba(242,193,78,.7);
+  animation:wiggle .5s cubic-bezier(.2,1.5,.4,1);
+}
+@media (prefers-reduced-motion:reduce){
+  #show .party,#show .rays,#showText .big,#showText .word,.scard.done{animation:none!important}
+}
+@media (max-width:520px){
+  header{padding-top:38px}
+  .cform select{flex:1 1 100%}
+  .cform .add{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="moon"></div>
+  <h1>מי ישן <em>איפה</em>?</h1>
+  <p class="sub">ההגרלה של סבא וסבתא · לילה טוב</p>
+</header>
+
+<section>
+  <div class="head"><div class="num">1</div><h2>הילדים</h2><span class="count" id="kidsCount"></span></div>
+  <div class="chips" id="kidsList"></div>
+  <p class="empty" id="kidsEmpty">עדיין לא הוספתם ילדים</p>
+  <div class="row">
+    <input type="text" id="kidInput" placeholder="שם הילד/ה" autocomplete="off">
+    <button class="add" id="kidAdd">הוספה</button>
+  </div>
+</section>
+
+<section>
+  <div class="head"><div class="num">2</div><h2>המקומות</h2><span class="count" id="spotsCount"></span></div>
+  <div id="spotsList"></div>
+  <p class="empty" id="spotsEmpty">עדיין לא הוספתם מקומות</p>
+  <div class="row">
+    <input type="text" id="spotZone" placeholder="אזור · למשל: מיטה תחתונה" autocomplete="off">
+    <input type="text" id="spotName" placeholder="מקום · למשל: צד ימין" autocomplete="off">
+    <button class="add" id="spotAdd">הוספה</button>
+  </div>
+  <p class="hint">כל מקום שייך לאזור (מיטה, חדר, ספה). האזור הוא מה שמאפשר לכתוב אילוצים כמו "לא יחד במיטה התחתונה".</p>
+</section>
+
+<section>
+  <div class="head"><div class="num">3</div><h2>אילוצים</h2><span class="count" id="consCount"></span></div>
+  <ul class="clist" id="consList"></ul>
+  <p class="empty" id="consEmpty">אין אילוצים — הכול פתוח</p>
+  <div class="cform">
+    <select id="cType">
+      <option value="apart">לא יחד</option>
+      <option value="forbid">אסור לישון ב…</option>
+      <option value="fixed">חייב לישון ב…</option>
+    </select>
+    <select id="cA"></select>
+    <select id="cB"></select>
+    <select id="cTarget"></select>
+    <button class="add" id="cAdd">הוספה</button>
+  </div>
+  <p class="hint" id="cHint"></p>
+</section>
+
+<button class="go" id="go">🎲 מגרילים!</button>
+
+<div id="result"></div>
+
+<footer>
+  <button class="sound" id="sound" title="צליל">🔊</button>
+  <button class="reset" id="reset">מחיקת הכול והתחלה מחדש</button>
+</footer>
+
+</div>
+
+<div id="show" hidden>
+  <div class="party"></div>
+  <div class="rays"></div>
+  <canvas id="confetti"></canvas>
+  <div class="showinner">
+    <div id="showText"></div>
+    <div class="showcards" id="showCards"></div>
+  </div>
+  <button id="skip">דלג ←</button>
+</div>
+
+<script>
+const KEY = 'mi-yashen-eifo-v1';
+const DEFAULT_ZONE = 'מקומות נוספים';
+const $ = id => document.getElementById(id);
+
+let state = { kids: [], spots: [], cons: [], result: null, sound: true };
+
+/* ---------- storage ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const p = JSON.parse(raw);
+      state.kids  = Array.isArray(p.kids)  ? p.kids  : [];
+      state.spots = Array.isArray(p.spots) ? p.spots : [];
+      state.cons  = Array.isArray(p.cons)  ? p.cons  : [];
+      state.sound = p.sound !== false;   // התוצאה עצמה לא נשמרת — רק הנתונים
+    }
+  }catch(e){ /* התחלה נקייה */ }
+}
+function save(){
+  const {kids, spots, cons, sound} = state;   // התוצאה נשארת רק לסשן הנוכחי
+  try{ localStorage.setItem(KEY, JSON.stringify({kids, spots, cons, sound})); }catch(e){}
+}
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+
+/* ---------- helpers ---------- */
+const zoneOf = s => s.zone || DEFAULT_ZONE;
+const spotLabel = s => zoneOf(s) + ' · ' + s.name;
+const kidById = id => state.kids.find(k => k.id === id);
+const spotById = id => state.spots.find(s => s.id === id);
+const zones = () => [...new Set(state.spots.map(zoneOf))];
+const q = t => '״' + t + '״';
+
+function shuffle(a){
+  a = a.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ---------- constraints ---------- */
+function consText(c){
+  if(c.type === 'apart'){
+    const a = kidById(c.a), b = kidById(c.b);
+    if(!a || !b) return null;
+    if(c.zone && !zones().includes(c.zone)) return null;   // האזור נמחק
+    return c.zone
+      ? a.name + ' ו' + b.name + ' לא יחד ב' + q(c.zone)
+      : a.name + ' ו' + b.name + ' לא יחד באותו אזור';
+  }
+  if(c.type === 'forbid'){
+    const k = kidById(c.kid); if(!k) return null;
+    if(c.targetKind === 'zone') return zones().includes(c.target) ? k.name + ' לא ב' + q(c.target) : null;
+    const s = spotById(c.target); return s ? k.name + ' לא ב' + q(spotLabel(s)) : null;
+  }
+  if(c.type === 'fixed'){
+    const k = kidById(c.kid), s = spotById(c.spot);
+    return (k && s) ? k.name + ' תמיד ב' + q(spotLabel(s)) : null;
+  }
+  return null;
+}
+/* מסיר אילוצים שמצביעים על ילד/מקום/אזור שנמחק */
+function pruneCons(){
+  state.cons = state.cons.filter(c => consText(c) !== null);
+}
+
+/* ---------- render ---------- */
+function render(){
+  pruneCons();
+
+  // kids
+  $('kidsList').innerHTML = state.kids.map(k =>
+    `<span class="chip">${esc(k.name)}<button class="x" data-kid="${k.id}" title="הסרה">✕</button></span>`).join('');
+  $('kidsEmpty').style.display = state.kids.length ? 'none' : 'block';
+  $('kidsCount').textContent = state.kids.length ? state.kids.length + ' ילדים' : '';
+
+  // spots, grouped by zone
+  const groups = {};
+  state.spots.forEach(s => (groups[zoneOf(s)] = groups[zoneOf(s)] || []).push(s));
+  $('spotsList').innerHTML = Object.entries(groups).map(([z, arr]) => `
+    <div class="zonegroup">
+      <div class="zonelabel">${esc(z)}</div>
+      <ul class="clist">${arr.map(s =>
+        `<li><span>${esc(s.name)}</span><button class="x" data-spot="${s.id}" title="הסרה">✕</button></li>`).join('')}</ul>
+    </div>`).join('');
+  $('spotsEmpty').style.display = state.spots.length ? 'none' : 'block';
+  $('spotsCount').textContent = state.spots.length ? state.spots.length + ' מקומות' : '';
+
+  // constraints
+  $('consList').innerHTML = state.cons.map(c =>
+    `<li><span>${esc(consText(c))}</span><button class="x" data-con="${c.id}" title="הסרה">✕</button></li>`).join('');
+  $('consEmpty').style.display = state.cons.length ? 'none' : 'block';
+  $('consCount').textContent = state.cons.length ? state.cons.length + ' אילוצים' : '';
+
+  renderConsForm();
+  $('go').disabled = state.kids.length === 0 || state.spots.length === 0;
+  save();
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fill(sel, items){
+  sel.innerHTML = items.map(o => `<option value="${esc(o.v)}">${esc(o.t)}</option>`).join('');
+}
+
+function renderConsForm(){
+  const type = $('cType').value;
+  const kidOpts = state.kids.map(k => ({v:k.id, t:k.name}));
+  const cA = $('cA'), cB = $('cB'), cT = $('cTarget');
+
+  if(type === 'apart'){
+    show(cA, true); show(cB, true); show(cT, true);
+    fill(cA, kidOpts); fill(cB, kidOpts);
+    fill(cT, [{v:'', t:'בכל אזור'}].concat(zones().map(z => ({v:z, t:'ב' + z}))));
+    $('cHint').textContent = 'שני ילדים שלא יכולים לחלוק את אותו אזור (למשל שני המקומות במיטה התחתונה).';
+  }else if(type === 'forbid'){
+    show(cA, true); show(cB, false); show(cT, true);
+    fill(cA, kidOpts);
+    fill(cT, zones().map(z => ({v:'z:'+z, t:'אזור: '+z}))
+            .concat(state.spots.map(s => ({v:'s:'+s.id, t:'מקום: '+spotLabel(s)}))));
+    $('cHint').textContent = 'ילד/ה שלא יכול/ה לישון באזור מסוים או במקום מסוים.';
+  }else{
+    show(cA, true); show(cB, false); show(cT, true);
+    fill(cA, kidOpts);
+    fill(cT, state.spots.map(s => ({v:s.id, t:spotLabel(s)})));
+    $('cHint').textContent = 'מקום קבוע שנשמר לילד/ה מסוים/ת — ההגרלה תמיד תשים אותו/ה שם.';
+  }
+}
+function show(el, on){ el.style.display = on ? '' : 'none'; }
+
+/* ---------- solver ---------- */
+function ok(kidId, spot, assign){
+  for(const c of state.cons){
+    if(c.type === 'fixed'){
+      if(c.kid === kidId && c.spot !== spot.id) return false;
+      if(c.kid !== kidId && c.spot === spot.id) return false; // המקום שמור
+    }else if(c.type === 'forbid'){
+      if(c.kid !== kidId) continue;
+      if(c.targetKind === 'zone' && c.target === zoneOf(spot)) return false;
+      if(c.targetKind === 'spot' && c.target === spot.id) return false;
+    }else if(c.type === 'apart'){
+      let other = c.a === kidId ? c.b : (c.b === kidId ? c.a : null);
+      if(!other) continue;
+      const os = assign[other];
+      if(!os) continue;
+      if(c.zone){ if(zoneOf(spot) === c.zone && zoneOf(os) === c.zone) return false; }
+      else if(zoneOf(spot) === zoneOf(os)) return false;
+    }
+  }
+  return true;
+}
+function tryRandom(){
+  const spots = shuffle(state.spots), assign = {};
+  for(let i = 0; i < state.kids.length; i++){
+    const kid = state.kids[i], s = spots[i];
+    if(!ok(kid.id, s, assign)) return null;
+    assign[kid.id] = s;
+  }
+  return assign;
+}
+function backtrack(){
+  const order = shuffle(state.kids), assign = {}, used = new Set();
+  let steps = 0;
+  function rec(i){
+    if(++steps > 200000) return false;
+    if(i === order.length) return true;
+    const kid = order[i];
+    for(const s of shuffle(state.spots)){
+      if(used.has(s.id) || !ok(kid.id, s, assign)) continue;
+      assign[kid.id] = s; used.add(s.id);
+      if(rec(i+1)) return true;
+      delete assign[kid.id]; used.delete(s.id);
+    }
+    return false;
+  }
+  return rec(0) ? assign : null;
+}
+function solve(){
+  // קודם הגרלה חופשית (הכי אקראי), ואם לא מסתדר – חיפוש שיטתי
+  for(let t = 0; t < 4000; t++){ const a = tryRandom(); if(a) return {assign:a, tight:false}; }
+  const a = backtrack();
+  return a ? {assign:a, tight:true} : null;
+}
+
+/* ---------- result ---------- */
+function renderResult(anim){
+  const box = $('result');
+  const r = state.result;
+  if(!r){ box.innerHTML = ''; return; }
+  if(r.error){
+    box.innerHTML = `<div class="banner err">${esc(r.error)}</div>`;
+    return;
+  }
+  const groups = {};
+  state.spots.forEach(s => (groups[zoneOf(s)] = groups[zoneOf(s)] || []).push(s));
+  let i = 0, html = '';
+  if(r.note) html += `<div class="banner ok">${esc(r.note)}</div>`;
+  html += '<div class="beds">';
+  for(const [z, arr] of Object.entries(groups)){
+    html += `<div class="bed"><div class="bedname">${esc(z)}</div><div class="slots">`;
+    for(const s of arr){
+      const who = r.map[s.id];
+      html += `<div class="slot ${who?'':'free'}" style="animation-delay:${(i*90)}ms" data-i="${i}">
+        <div class="place">${esc(s.name)}</div>
+        <div class="who">${who ? esc(who) : 'ריק'}</div></div>`;
+      i++;
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  box.innerHTML = html;
+}
+
+/* ================= AUDIO ================= */
+let AC = null;
+function ac(){
+  if(!state.sound) return null;
+  try{
+    if(!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if(AC.state === 'suspended') AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+function tone(freq, delay, dur, type, vol){
+  const a = ac(); if(!a) return;
+  const t = a.currentTime + delay;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type || 'triangle'; o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol == null ? .22 : vol, t + .012);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+}
+function swoop(from, to, delay, dur, vol){
+  const a = ac(); if(!a) return;
+  const t = a.currentTime + delay;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = 'sawtooth';
+  o.frequency.setValueAtTime(from, t);
+  o.frequency.exponentialRampToValueAtTime(to, t + dur);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol == null ? .12 : vol, t + .05);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+}
+function drumroll(delay, dur){
+  const a = ac(); if(!a) return;
+  const t0 = a.currentTime + delay;
+  const buf = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i = 0; i < d.length; i++){
+    const env = .5 + .5 * Math.sin(i / a.sampleRate * 2 * Math.PI * 17); // רעידות תופים
+    d[i] = (Math.random() * 2 - 1) * env * .35;
+  }
+  const src = a.createBufferSource(); src.buffer = buf;
+  const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900;
+  const g = a.createGain();
+  g.gain.setValueAtTime(.05, t0);
+  g.gain.linearRampToValueAtTime(.3, t0 + dur * .85);
+  g.gain.linearRampToValueAtTime(.0001, t0 + dur);
+  src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur);
+}
+const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.7, 1318.5];
+function pling(i){
+  const f = SCALE[i % SCALE.length] * (i >= SCALE.length ? 2 : 1);
+  tone(f, 0, .5, 'triangle', .3); tone(f * 2, .01, .3, 'sine', .12);
+}
+function fanfare(){
+  const n = [523.25, 659.25, 783.99, 1046.5];
+  n.forEach((f, i) => { tone(f, i * .13, .55, 'triangle', .26); tone(f/2, i * .13, .55, 'sine', .14); });
+  tone(1318.5, .52, 1.1, 'triangle', .3); tone(1046.5, .52, 1.1, 'sine', .16); tone(659.25, .52, 1.1, 'sine', .12);
+}
+
+/* ================= CONFETTI ================= */
+const COLORS = ['#ff5f9e','#ffd23f','#34d399','#22d3ee','#a855f7','#ff8a3d','#ffffff','#7cff8a'];
+let cctx = null, parts = [], raf = 0;
+function fitCanvas(){
+  const c = $('confetti'), r = Math.min(devicePixelRatio || 1, 2);
+  c.width = innerWidth * r; c.height = innerHeight * r;
+  cctx = c.getContext('2d'); cctx.setTransform(r, 0, 0, r, 0, 0);
+}
+function burst(x, y, n, power){
+  for(let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2, s = (.4 + Math.random()) * power;
+    parts.push({
+      x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - power * .55,
+      w: 6 + Math.random() * 8, h: 8 + Math.random() * 12,
+      rot: Math.random() * 6.28, vr: (Math.random() - .5) * .35,
+      c: COLORS[(Math.random() * COLORS.length) | 0],
+      life: 1, round: Math.random() < .3
+    });
+  }
+  if(!raf) raf = requestAnimationFrame(tick);
+}
+function rain(n){
+  for(let i = 0; i < n; i++){
+    parts.push({
+      x: Math.random() * innerWidth, y: -20 - Math.random() * 200,
+      vx: (Math.random() - .5) * 1.5, vy: 2 + Math.random() * 3,
+      w: 6 + Math.random() * 7, h: 8 + Math.random() * 11,
+      rot: Math.random() * 6.28, vr: (Math.random() - .5) * .3,
+      c: COLORS[(Math.random() * COLORS.length) | 0], life: 1, round: Math.random() < .3
+    });
+  }
+  if(!raf) raf = requestAnimationFrame(tick);
+}
+function tick(){
+  if(!cctx){ raf = 0; return; }
+  cctx.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.y < innerHeight + 60 && p.life > 0);
+  for(const p of parts){
+    p.vy += .16; p.vx *= .995; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+    cctx.save(); cctx.translate(p.x, p.y); cctx.rotate(p.rot);
+    cctx.fillStyle = p.c;
+    if(p.round){ cctx.beginPath(); cctx.arc(0, 0, p.w / 2, 0, 6.29); cctx.fill(); }
+    else cctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    cctx.restore();
+  }
+  raf = parts.length ? requestAnimationFrame(tick) : 0;
+}
+function clearConfetti(){
+  parts = []; if(raf) cancelAnimationFrame(raf); raf = 0;
+  if(cctx) cctx.clearRect(0, 0, innerWidth, innerHeight);
+}
+
+/* ================= THE SHOW ================= */
+let timers = [], intervals = [], showing = false;
+function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+function clearShow(){
+  timers.forEach(clearTimeout); intervals.forEach(clearInterval);
+  timers = []; intervals = [];
+}
+function runShow(map, done){
+  const ov = $('show'), txt = $('showText'), cards = $('showCards');
+  showing = true;
+  document.body.style.overflow = 'hidden';
+  ov.hidden = false; ov.classList.remove('out');
+  fitCanvas(); clearConfetti();
+  txt.innerHTML = ''; cards.innerHTML = '';
+
+  const names = state.kids.map(k => k.name);
+  const spinIv = {};
+  const list = state.spots.map(s => ({s, who: map[s.id] || null}));
+  const taken = list.filter(l => l.who);
+  const step = Math.max(300, Math.min(750, Math.round(2200 / Math.max(1, taken.length))));
+
+  const close = () => {
+    ov.hidden = true; ov.classList.remove('out'); clearConfetti();
+    document.body.style.overflow = ''; showing = false; done && done();
+  };
+  const skip = $('skip');
+  skip.textContent = 'דלג ←'; skip.classList.remove('final');
+  skip.onclick = () => { clearShow(); ov.classList.add('out'); setTimeout(close, 450); };
+
+  const say = (html) => { txt.innerHTML = html; };
+
+  // ---- 0.0 מוכנים? ----
+  say('<span class="word">מוכנים?</span>');
+  swoop(180, 900, 0, .5, .16);
+
+  // ---- ספירה לאחור ----
+  [3, 2, 1].forEach((n, i) => later(900 + i * 900, () => {
+    say('<span class="big">' + n + '</span>');
+    tone(440 + i * 110, 0, .28, 'square', .22);
+    tone(880 + i * 220, .02, .2, 'sine', .1);
+    burst(innerWidth / 2, innerHeight * .45, 26, 7);
+  }));
+
+  // ---- מגרילים! הקלפים מתחילים להסתובב ----
+  later(3600, () => {
+    say('<span class="word rainbow">מגרילים!</span>');
+    drumroll(0, 2.7);
+    swoop(300, 1400, 0, .35, .1);
+    cards.innerHTML = list.map((l, i) =>
+      `<div class="scard ${l.who ? 'spin' : 'empty'}" style="--d:${i*55}ms">
+         <div class="p">${esc(zoneOf(l.s))} · ${esc(l.s.name)}</div>
+         <div class="n">${l.who ? '…' : 'ריק'}</div>
+       </div>`).join('');
+    list.forEach((l, i) => {
+      if(!l.who) return;
+      const el = cards.children[i].querySelector('.n');
+      const iv = setInterval(() => { el.textContent = names[(Math.random() * names.length) | 0]; }, 70);
+      spinIv[i] = iv; intervals.push(iv);
+    });
+    for(let i = 0; i < 5; i++) later(i * 400, () => rain(14));
+  });
+
+  // ---- חשיפה אחד-אחד ----
+  const t0 = 6300;
+  taken.forEach((l, i) => later(t0 + i * step, () => {
+    const idx = list.indexOf(l);
+    const card = cards.children[idx];
+    if(!card) return;
+    // עוצרים את הסיבוב של הקלף הזה בלבד
+    clearInterval(spinIv[idx]);
+    intervals = intervals.filter(x => x !== spinIv[idx]);
+    card.querySelector('.n').textContent = l.who;
+    card.classList.remove('spin'); card.classList.add('done');
+    pling(i);
+    const r = card.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 34, 8);
+  }));
+
+  // ---- סיום חגיגי ----
+  const end = t0 + taken.length * step + 350;
+  later(end, () => {
+    say('<span class="word rainbow">לילה טוב! 🌙</span>');
+    fanfare();
+    for(let i = 0; i < 7; i++) later(i * 130, () => {
+      burst(innerWidth * (.1 + Math.random() * .8), innerHeight * (.25 + Math.random() * .45), 40, 10);
+      rain(20);
+    });
+    // המסך נשאר פתוח עד שסוגרים אותו — קונפטי עדין ממשיך ליפול
+    intervals.push(setInterval(() => rain(6), 1400));
+    skip.textContent = 'סיימנו — חזרה ←';
+    skip.classList.add('final');
+  });
+}
+
+/* ---------- actions ---------- */
+function addKid(){
+  const inp = $('kidInput'), name = inp.value.trim();
+  if(!name) return;
+  if(state.kids.some(k => k.name === name)){ inp.value=''; return; }
+  state.kids.push({id:uid(), name});
+  inp.value = ''; inp.focus(); render();
+}
+function addSpot(){
+  const zi = $('spotZone'), ni = $('spotName');
+  const zone = zi.value.trim(), name = ni.value.trim();
+  if(!name){ ni.focus(); return; }
+  state.spots.push({id:uid(), zone, name});
+  ni.value = ''; ni.focus(); render();   // האזור נשאר – נוח להוספת מקום נוסף באותה מיטה
+}
+function addCon(){
+  const type = $('cType').value;
+  if(type === 'apart'){
+    const a = $('cA').value, b = $('cB').value;
+    if(!a || !b || a === b) return;
+    const zone = $('cTarget').value;
+    if(state.cons.some(c => c.type==='apart' && c.zone===zone && ((c.a===a&&c.b===b)||(c.a===b&&c.b===a)))) return;
+    state.cons.push({id:uid(), type:'apart', a, b, zone});
+  }else if(type === 'forbid'){
+    const kid = $('cA').value, t = $('cTarget').value;
+    if(!kid || !t) return;
+    const targetKind = t.startsWith('z:') ? 'zone' : 'spot';
+    const target = t.slice(2);
+    if(state.cons.some(c => c.type==='forbid' && c.kid===kid && c.targetKind===targetKind && c.target===target)) return;
+    state.cons.push({id:uid(), type:'forbid', kid, targetKind, target});
+  }else{
+    const kid = $('cA').value, spot = $('cTarget').value;
+    if(!kid || !spot) return;
+    state.cons = state.cons.filter(c => !(c.type==='fixed' && (c.kid===kid || c.spot===spot)));
+    state.cons.push({id:uid(), type:'fixed', kid, spot});
+  }
+  render();
+}
+function randomize(){
+  if(showing) return;
+  if(state.kids.length > state.spots.length){
+    state.result = {error:`יש ${state.kids.length} ילדים אבל רק ${state.spots.length} מקומות. צריך להוסיף עוד מקום.`};
+    render(); renderResult(false); return;
+  }
+  const res = solve();
+  if(!res){
+    state.result = {error:'אי אפשר לסדר את כולם עם האילוצים האלה. נסו להסיר אילוץ אחד או להוסיף מקום.'};
+    render(); renderResult(false); return;
+  }
+  const map = {};
+  for(const [kidId, spot] of Object.entries(res.assign)) map[spot.id] = kidById(kidId).name;
+  state.result = {map, note: res.tight ? 'האילוצים צפופים — כמעט ואין אפשרויות אחרות לסידור.' : null};
+  $('result').innerHTML = '';
+  ac();                       // פותח את האודיו על לחיצת המשתמש
+  runShow(map, () => {
+    renderResult(false);
+    $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+}
+
+/* ---------- wiring ---------- */
+$('kidAdd').onclick = addKid;
+$('kidInput').onkeydown = e => { if(e.key === 'Enter') addKid(); };
+$('spotAdd').onclick = addSpot;
+$('spotZone').onkeydown = e => { if(e.key === 'Enter') $('spotName').focus(); };
+$('spotName').onkeydown = e => { if(e.key === 'Enter') addSpot(); };
+$('cType').onchange = renderConsForm;
+$('cAdd').onclick = addCon;
+$('go').onclick = randomize;
+$('sound').onclick = () => {
+  state.sound = !state.sound;
+  $('sound').textContent = state.sound ? '🔊' : '🔇';
+  $('sound').title = state.sound ? 'צליל דלוק' : 'צליל כבוי';
+  save();
+};
+addEventListener('resize', () => { if(!$('show').hidden) fitCanvas(); });
+$('reset').onclick = () => {
+  if(confirm('למחוק את כל הילדים, המקומות והאילוצים?')){
+    state = {kids:[], spots:[], cons:[], result:null};
+    render(); renderResult(false);
+  }
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-kid],button[data-spot],button[data-con]');
+  if(!b) return;
+  if(b.dataset.kid)  state.kids  = state.kids.filter(k => k.id !== b.dataset.kid);
+  if(b.dataset.spot) state.spots = state.spots.filter(s => s.id !== b.dataset.spot);
+  if(b.dataset.con)  state.cons  = state.cons.filter(c => c.id !== b.dataset.con);
+  state.result = null;
+  render(); renderResult(false);
+});
+
+load();
+$('sound').textContent = state.sound ? '🔊' : '🔇';
+render(); renderResult(false);
+</script>
+</body>
+</html>
