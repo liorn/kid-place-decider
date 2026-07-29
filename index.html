@@ -153,9 +153,29 @@ button:active{transform:scale(.96)}
 .empty{color:#79809f;font-size:.93rem;font-style:italic;margin:2px 0 14px}
 
 /* ---------- constraint builder ---------- */
-.cform{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
-.cform select{flex:1 1 130px}
-.cform .add{flex:0 0 auto}
+.ctypes{display:flex;flex-wrap:wrap;gap:9px}
+.ctype{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
+  color:var(--ink);border-radius:12px;padding:11px 15px;font-size:.97rem;font-weight:600;
+}
+.ctype:hover:not(:disabled){background:rgba(255,255,255,.13)}
+.ctype.on{background:rgba(242,193,78,.16);border-color:var(--gold);color:var(--gold-soft)}
+.ctype:disabled{opacity:.3;cursor:not-allowed}
+.cbuild{
+  margin-top:14px;border:1px solid var(--line);border-radius:14px;
+  padding:16px;background:rgba(0,0,0,.2);animation:rise .28s cubic-bezier(.2,.7,.3,1);
+}
+.cbuild[hidden]{display:none}
+.sentence{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-size:1.06rem}
+.sentence select{flex:0 1 auto;max-width:100%}
+.sentence b{font-weight:600;color:var(--gold-soft);font-size:1.02rem}
+.cactions{display:flex;gap:9px;margin-top:15px}
+.cancel{
+  background:none;color:var(--ink-dim);border:1px solid rgba(255,255,255,.13);
+  border-radius:11px;padding:11px 18px;font-size:.95rem;font-family:inherit;
+}
+.cancel:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.clist li .ic{flex:0 0 auto;font-size:1.05rem}
 .hint{font-size:.86rem;color:#79809f;margin:11px 0 0;line-height:1.5}
 
 /* ---------- go ---------- */
@@ -282,8 +302,10 @@ footer{text-align:center;margin-top:34px;padding-bottom:10px;display:flex;gap:18
 }
 @media (max-width:520px){
   header{padding-top:38px}
-  .cform select{flex:1 1 100%}
-  .cform .add{width:100%}
+  .ctype{flex:1 1 100%;text-align:right}
+  .sentence{flex-direction:column;align-items:stretch;gap:7px}
+  .sentence b{text-align:center}
+  .cactions button{flex:1}
 }
 </style>
 </head>
@@ -322,18 +344,12 @@ footer{text-align:center;margin-top:34px;padding-bottom:10px;display:flex;gap:18
   <div class="head"><div class="num">3</div><h2>אילוצים</h2><span class="count" id="consCount"></span></div>
   <ul class="clist" id="consList"></ul>
   <p class="empty" id="consEmpty">אין אילוצים — הכול פתוח</p>
-  <div class="cform">
-    <select id="cType">
-      <option value="apart">לא יחד</option>
-      <option value="forbid">אסור לישון ב…</option>
-      <option value="fixed">חייב לישון ב…</option>
-    </select>
-    <select id="cA"></select>
-    <select id="cB"></select>
-    <select id="cTarget"></select>
-    <button class="add" id="cAdd">הוספה</button>
+  <div class="ctypes" id="cTypes">
+    <button class="ctype" data-t="apart">👫 ילדים שלא ישנים יחד</button>
+    <button class="ctype" data-t="forbid">🚫 ילד שלא ישן במקום מסוים</button>
+    <button class="ctype" data-t="fixed">📌 מקום קבוע לילד</button>
   </div>
-  <p class="hint" id="cHint"></p>
+  <div class="cbuild" id="cBuild" hidden></div>
 </section>
 
 <button class="go" id="go">🎲 מגרילים!</button>
@@ -406,7 +422,7 @@ function consText(c){
     if(c.zone && !zones().includes(c.zone)) return null;   // האזור נמחק
     return c.zone
       ? a.name + ' ו' + b.name + ' לא יחד ב' + q(c.zone)
-      : a.name + ' ו' + b.name + ' לא יחד באותו אזור';
+      : a.name + ' ו' + b.name + ' לא יחד בשום אזור';
   }
   if(c.type === 'forbid'){
     const k = kidById(c.kid); if(!k) return null;
@@ -447,8 +463,10 @@ function render(){
   $('spotsCount').textContent = state.spots.length ? state.spots.length + ' מקומות' : '';
 
   // constraints
+  const ICON = {apart:'👫', forbid:'🚫', fixed:'📌'};
   $('consList').innerHTML = state.cons.map(c =>
-    `<li><span>${esc(consText(c))}</span><button class="x" data-con="${c.id}" title="הסרה">✕</button></li>`).join('');
+    `<li><span class="ic">${ICON[c.type]}</span><span>${esc(consText(c))}</span>
+       <button class="x" data-con="${c.id}" title="הסרה">✕</button></li>`).join('');
   $('consEmpty').style.display = state.cons.length ? 'none' : 'block';
   $('consCount').textContent = state.cons.length ? state.cons.length + ' אילוצים' : '';
 
@@ -457,34 +475,66 @@ function render(){
   save();
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function fill(sel, items){
-  sel.innerHTML = items.map(o => `<option value="${esc(o.v)}">${esc(o.t)}</option>`).join('');
-}
+const opt = (v, t) => `<option value="${esc(v)}">${esc(t)}</option>`;
+const sel = (id, html) => `<select id="${id}">${html}</select>`;
+const kidOpts = () => state.kids.map(k => opt(k.id, k.name)).join('');
 
+/* בוחרים קודם סוג אילוץ, ורק אז מופיע המשפט להשלמה */
+let cType = null;
 function renderConsForm(){
-  const type = $('cType').value;
-  const kidOpts = state.kids.map(k => ({v:k.id, t:k.name}));
-  const cA = $('cA'), cB = $('cB'), cT = $('cTarget');
+  const box = $('cBuild');
+  for(const b of $('cTypes').children){
+    const t = b.dataset.t;
+    b.disabled = t === 'apart'
+      ? (state.kids.length < 2 || state.spots.length === 0)
+      : (state.kids.length === 0 || state.spots.length === 0);
+    if(b.disabled && t === cType) cType = null;
+    b.classList.toggle('on', t === cType);
+  }
+  if(!cType){ box.hidden = true; box.innerHTML = ''; return; }
 
-  if(type === 'apart'){
-    show(cA, true); show(cB, true); show(cT, true);
-    fill(cA, kidOpts); fill(cB, kidOpts);
-    fill(cT, [{v:'', t:'בכל אזור'}].concat(zones().map(z => ({v:z, t:'ב' + z}))));
-    $('cHint').textContent = 'שני ילדים שלא יכולים לחלוק את אותו אזור (למשל שני המקומות במיטה התחתונה).';
-  }else if(type === 'forbid'){
-    show(cA, true); show(cB, false); show(cT, true);
-    fill(cA, kidOpts);
-    fill(cT, zones().map(z => ({v:'z:'+z, t:'אזור: '+z}))
-            .concat(state.spots.map(s => ({v:'s:'+s.id, t:'מקום: '+spotLabel(s)}))));
-    $('cHint').textContent = 'ילד/ה שלא יכול/ה לישון באזור מסוים או במקום מסוים.';
+  const keep = {};
+  box.querySelectorAll('select').forEach(s => keep[s.id] = s.value);
+
+  let sentence;
+  if(cType === 'apart'){
+    sentence = sel('cA', kidOpts()) + '<b>ו־</b>' + sel('cB', kidOpts()) + '<b>לא יחד</b>' +
+      sel('cTarget', opt('', 'בשום אזור') + zones().map(z => opt(z, 'ב' + z)).join(''));
+  }else if(cType === 'forbid'){
+    sentence = sel('cA', kidOpts()) + '<b>לא ב־</b>' + sel('cTarget',
+      `<optgroup label="אזור שלם">${zones().map(z => opt('z:'+z, z)).join('')}</optgroup>` +
+      `<optgroup label="מקום מסוים">${state.spots.map(s => opt('s:'+s.id, spotLabel(s))).join('')}</optgroup>`);
   }else{
-    show(cA, true); show(cB, false); show(cT, true);
-    fill(cA, kidOpts);
-    fill(cT, state.spots.map(s => ({v:s.id, t:spotLabel(s)})));
-    $('cHint').textContent = 'מקום קבוע שנשמר לילד/ה מסוים/ת — ההגרלה תמיד תשים אותו/ה שם.';
+    sentence = sel('cA', kidOpts()) + '<b>תמיד ב־</b>' +
+      sel('cTarget', state.spots.map(s => opt(s.id, spotLabel(s))).join(''));
+  }
+
+  box.hidden = false;
+  box.innerHTML = `<div class="sentence">${sentence}</div>
+    <div class="cactions"><button class="add" id="cAdd">הוספת האילוץ</button>
+    <button class="cancel" id="cCancel">ביטול</button></div>`;
+
+  // שומרים על מה שכבר נבחר כשהרשימות מתרעננות
+  for(const [id, v] of Object.entries(keep)){
+    const el = box.querySelector('#' + id);
+    if(el && [...el.options].some(o => o.value === v)) el.value = v;
+  }
+  if(cType === 'apart') separate('cB');
+
+  $('cAdd').onclick = addCon;
+  $('cCancel').onclick = () => { cType = null; renderConsForm(); };
+  if(cType === 'apart'){
+    $('cA').onchange = () => separate('cB');
+    $('cB').onchange = () => separate('cA');
   }
 }
-function show(el, on){ el.style.display = on ? '' : 'none'; }
+/* שני ילדים שונים תמיד — אם נבחר אותו ילד פעמיים, השני זז */
+function separate(moveId){
+  const a = $('cA'), b = $('cB');
+  if(!a || !b || a.value !== b.value) return;
+  const other = state.kids.find(k => k.id !== a.value);
+  if(other) $(moveId).value = other.id;
+}
 
 /* ---------- solver ---------- */
 function ok(kidId, spot, assign){
@@ -791,7 +841,7 @@ function addSpot(){
   ni.value = ''; ni.focus(); render();   // האזור נשאר – נוח להוספת מקום נוסף באותה מיטה
 }
 function addCon(){
-  const type = $('cType').value;
+  const type = cType;
   if(type === 'apart'){
     const a = $('cA').value, b = $('cB').value;
     if(!a || !b || a === b) return;
@@ -841,8 +891,12 @@ $('kidInput').onkeydown = e => { if(e.key === 'Enter') addKid(); };
 $('spotAdd').onclick = addSpot;
 $('spotZone').onkeydown = e => { if(e.key === 'Enter') $('spotName').focus(); };
 $('spotName').onkeydown = e => { if(e.key === 'Enter') addSpot(); };
-$('cType').onchange = renderConsForm;
-$('cAdd').onclick = addCon;
+$('cTypes').onclick = e => {
+  const b = e.target.closest('.ctype');
+  if(!b || b.disabled) return;
+  cType = (cType === b.dataset.t) ? null : b.dataset.t;
+  renderConsForm();
+};
 $('go').onclick = randomize;
 $('sound').onclick = () => {
   state.sound = !state.sound;

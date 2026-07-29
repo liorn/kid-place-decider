@@ -8,10 +8,10 @@ A single-page Hebrew web app for randomizing where the kids sleep at grandma and
 
 1. **ילדים** — enter the kids' names.
 2. **מקומות** — enter the sleeping spots as *zone · spot* (e.g. `מיטה תחתונה · צד ימין`). The zone is what makes constraints like "not together on the lower bed" possible.
-3. **אילוצים** — three kinds of constraints:
-   - **לא יחד** — two kids who can't share a zone (any zone, or one specific zone).
-   - **אסור לישון ב…** — a kid who can't sleep in a given zone or spot.
-   - **חייב לישון ב…** — a spot reserved for a specific kid.
+3. **אילוצים** — pick the kind of rule first, then fill in the sentence:
+   - 👫 **ילדים שלא ישנים יחד** — two kids who can't share a zone (a specific zone, or none at all).
+   - 🚫 **ילד שלא ישן במקום מסוים** — a kid ruled out of a whole zone or a single spot.
+   - 📌 **מקום קבוע לילד** — a spot reserved for one kid; nobody else can get it.
 4. **הגרלה** — a ~10 second colorful full-screen show: countdown, drumroll, spinning names, one-by-one reveal with confetti and sound, then a final celebration screen that stays up until you close it.
 
 ## Notes
