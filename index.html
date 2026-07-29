@@ -158,9 +158,18 @@ button:active{transform:scale(.96)}
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
   color:var(--ink);border-radius:12px;padding:11px 15px;font-size:.97rem;font-weight:600;
 }
-.ctype:hover:not(:disabled){background:rgba(255,255,255,.13)}
+.ctype:hover:not(.off){background:rgba(255,255,255,.13)}
 .ctype.on{background:rgba(242,193,78,.16);border-color:var(--gold);color:var(--gold-soft)}
-.ctype:disabled{opacity:.3;cursor:not-allowed}
+.ctype.off{opacity:.4;cursor:help}
+.ctype.shake{animation:shake .4s}
+@keyframes shake{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-4px)}}
+.why{
+  display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:11px 13px;
+  border-radius:12px;font-size:.93rem;line-height:1.45;
+  background:rgba(224,138,109,.12);border:1px solid rgba(224,138,109,.35);color:#f6c3ae;
+  animation:pop .25s cubic-bezier(.2,1.4,.4,1);
+}
+.why[hidden]{display:none}
 .cbuild{
   margin-top:14px;border:1px solid var(--line);border-radius:14px;
   padding:16px;background:rgba(0,0,0,.2);animation:rise .28s cubic-bezier(.2,.7,.3,1);
@@ -188,7 +197,9 @@ button:active{transform:scale(.96)}
   letter-spacing:.5px;
 }
 .go:hover{filter:brightness(1.07)}
-.go:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.5)}
+.go.off{opacity:.42;cursor:help;filter:grayscale(.55)}
+.go.off:hover{filter:grayscale(.55)}
+.go.shake{animation:shake .4s}
 
 /* ---------- result ---------- */
 #result{margin-top:24px}
@@ -349,10 +360,12 @@ footer{text-align:center;margin-top:34px;padding-bottom:10px;display:flex;gap:18
     <button class="ctype" data-t="forbid">🚫 ילד שלא ישן במקום מסוים</button>
     <button class="ctype" data-t="fixed">📌 מקום קבוע לילד</button>
   </div>
+  <p class="why" id="cWhy" hidden></p>
   <div class="cbuild" id="cBuild" hidden></div>
 </section>
 
 <button class="go" id="go">🎲 מגרילים!</button>
+<p class="why" id="goWhy" hidden></p>
 
 <div id="result"></div>
 
@@ -471,7 +484,11 @@ function render(){
   $('consCount').textContent = state.cons.length ? state.cons.length + ' אילוצים' : '';
 
   renderConsForm();
-  $('go').disabled = state.kids.length === 0 || state.spots.length === 0;
+  const goWhy = goMissing();
+  $('go').classList.toggle('off', !!goWhy);
+  $('go').setAttribute('aria-disabled', goWhy ? 'true' : 'false');
+  if(goWhy) $('go').title = goWhy; else $('go').removeAttribute('title');
+  $('goWhy').hidden = true;
   save();
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -481,14 +498,24 @@ const kidOpts = () => state.kids.map(k => opt(k.id, k.name)).join('');
 
 /* בוחרים קודם סוג אילוץ, ורק אז מופיע המשפט להשלמה */
 let cType = null;
+/* מה חסר כדי שאפשר יהיה להוסיף אילוץ מהסוג הזה — מחרוזת ריקה = הכול מוכן */
+function missing(type){
+  const needKids = type === 'apart' ? 2 : 1;
+  const parts = [];
+  if(state.kids.length < needKids) parts.push(needKids === 2 ? 'שני ילדים' : 'ילד אחד');
+  if(state.spots.length === 0) parts.push('מקום אחד');
+  return parts.length ? 'צריך ' + parts.join(' ו') + ' לפחות — מוסיפים למעלה' : '';
+}
 function renderConsForm(){
   const box = $('cBuild');
+  $('cWhy').hidden = true;
   for(const b of $('cTypes').children){
-    const t = b.dataset.t;
-    b.disabled = t === 'apart'
-      ? (state.kids.length < 2 || state.spots.length === 0)
-      : (state.kids.length === 0 || state.spots.length === 0);
-    if(b.disabled && t === cType) cType = null;
+    const t = b.dataset.t, why = missing(t);
+    b.classList.toggle('off', !!why);
+    b.classList.remove('shake');
+    b.setAttribute('aria-disabled', why ? 'true' : 'false');
+    if(why) b.title = why; else b.removeAttribute('title');
+    if(why && t === cType) cType = null;
     b.classList.toggle('on', t === cType);
   }
   if(!cType){ box.hidden = true; box.innerHTML = ''; return; }
@@ -863,8 +890,23 @@ function addCon(){
   }
   render();
 }
+function goMissing(){
+  const parts = [];
+  if(!state.kids.length) parts.push('ילדים');
+  if(!state.spots.length) parts.push('מקומות');
+  return parts.length ? 'לפני ההגרלה צריך להוסיף ' + parts.join(' ו') : '';
+}
 function randomize(){
   if(showing) return;
+  const why = goMissing();
+  if(why){
+    const p = $('goWhy');
+    p.textContent = '☝️ ' + why;
+    p.hidden = false;
+    const g = $('go');
+    g.classList.remove('shake'); void g.offsetWidth; g.classList.add('shake');
+    return;
+  }
   if(state.kids.length > state.spots.length){
     state.result = {error:`יש ${state.kids.length} ילדים אבל רק ${state.spots.length} מקומות. צריך להוסיף עוד מקום.`};
     render(); renderResult(false); return;
@@ -893,7 +935,15 @@ $('spotZone').onkeydown = e => { if(e.key === 'Enter') $('spotName').focus(); };
 $('spotName').onkeydown = e => { if(e.key === 'Enter') addSpot(); };
 $('cTypes').onclick = e => {
   const b = e.target.closest('.ctype');
-  if(!b || b.disabled) return;
+  if(!b) return;
+  const why = missing(b.dataset.t);
+  if(why){                       // גם במגע וגם בעכבר — מסבירים למה אי אפשר
+    const p = $('cWhy');
+    p.textContent = '☝️ ' + why;
+    p.hidden = false;
+    b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+    return;
+  }
   cType = (cType === b.dataset.t) ? null : b.dataset.t;
   renderConsForm();
 };
